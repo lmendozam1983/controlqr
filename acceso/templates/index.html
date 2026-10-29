@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- SECCIÓN HERO / BIENVENIDA -->
+    <div class="p-5 mb-4 bg-light rounded-3 shadow-sm border text-center position-relative overflow-hidden">
+        <div class="py-2">
+            <img src="https://www.colegionocedal.cl/30-a%c3%b1os-firma/images/ins_cn_30_2_lmm.png" 
+                 alt="Logo Nocedal" 
+                 style="height: 100px; width: auto;" 
+                 class="d-inline-block align-text-top mb-2">
+            <h1 class="display-5 fw-bold text-dark">Control de Acceso Escolar</h1>
+            <p class="col-md-8 mx-auto fs-5 text-muted">
+                Plataforma para la lectura QR de apoderados, validación de ingreso y auditoría de accesos en portería.
+            </p>
+            <a href="{% url 'escaner' %}" class="btn btn-success btn-lg px-4 gap-3 fw-bold mt-2 shadow-sm">
+                <i class="fas fa-qrcode me-2"></i>Ir al Escáner QR
+            </a>
+        </div>
+    </div>
+
+    <!-- TARJETAS DE ACCESOS RÁPIDOS -->
+    <div class="row g-4 py-2">
+        
+        <!-- Tarjeta 1: Escáner QR -->
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-3">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-success bg-gradient text-white rounded-circle mb-3 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Escáner de Ingreso</h5>
+                    <p class="text-muted small">
+                        Abre la cámara para leer el código QR del apoderado y verificar sus alumnos asociados.
+                    </p>
+                    <a href="{% url 'escaner' %}" class="btn btn-outline-success btn-sm rounded-pill px-3">
+                        Abrir Escáner <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta 2: Historial de Accesos -->
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-3">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Historial de Accesos</h5>
+                    <p class="text-muted small">
+                        Consulta y filtra el registro de lecturas ordenadas por fecha con paginación y búsqueda.
+                    </p>
+                    <a href="{% url 'historial' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                        Ver Registro <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta 3: Administración -->
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-3">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-secondary bg-gradient text-white rounded-circle mb-3 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
+                        <i class="fas fa-user-cog"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Gestión de Datos</h5>
+                    <p class="text-muted small">
+                        Registro de nuevos apoderados, asignación de alumnos y fotografías en la base de datos.
+                    </p>
+                    <a href="/admin/" target="_blank" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                        Ir al Admin <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- PIE INFORMATIVO -->
+    <div class="alert alert-success border-0 shadow-sm mt-4 d-flex align-items-center" role="alert">
+        <i class="fas fa-info-circle fa-2x me-3 text-success"></i>
+        <div>
+            <strong>Sugerencia:</strong> Utiliza un smartphone o tablet con cámara trasera para agilizar el proceso de verificación en la portería.
+        </div>
+    </div>
+
+</div>
+{% endblock %}

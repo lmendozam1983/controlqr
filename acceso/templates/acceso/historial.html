@@ -1,0 +1,336 @@
+{% extends 'base.html' %}
+{% load tz django_bootstrap5 %}
+
+{% block content %}
+<style>
+    :root {
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --primary: #1e40af;
+        --primary-hover: #1d4ed8;
+        --success: #059669;
+        --success-bg: #d1fae5;
+        --danger: #dc2626;
+        --danger-bg: #fee2e2;
+        --text-main: #1f2937;
+        --text-muted: #6b7280;
+        --border-color: #e2e8f0;
+    }
+
+    .container-historial {
+        max-width: 950px;
+        margin: 0 auto;
+    }
+
+    .header-historial {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .header-historial h1 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--primary);
+    }
+
+    .btn-volver {
+        background-color: var(--primary);
+        color: white;
+        text-decoration: none;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        transition: background 0.2s;
+    }
+
+    .btn-volver:hover {
+        background-color: var(--primary-hover);
+        color: white;
+    }
+
+    /* Tarjeta de Filtros */
+    .filter-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 16px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .filter-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        align-items: end;
+    }
+
+    .form-group-custom {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .form-group-custom label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+    }
+
+    .form-control-custom {
+        padding: 9px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 0.875rem;
+        outline: none;
+        width: 100%;
+    }
+
+    .form-control-custom:focus {
+        border-color: var(--primary);
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-submit-custom {
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        padding: 9px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        flex: 1;
+    }
+
+    .btn-reset-custom {
+        background-color: #e2e8f0;
+        color: #475569;
+        text-decoration: none;
+        padding: 9px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-align: center;
+        font-size: 0.875rem;
+    }
+
+    /* Tabla */
+    .table-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-color);
+        overflow-x: auto;
+    }
+
+    .table-custom {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 0.9rem;
+    }
+
+    .table-custom th {
+        background-color: #f1f5f9;
+        padding: 14px 16px;
+        font-weight: 700;
+        color: #475569;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+    }
+
+    .table-custom td {
+        padding: 14px 16px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .table-custom tr:last-child td {
+        border-bottom: none;
+    }
+
+    .badge-status {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.75rem;
+    }
+
+    .badge-status.permitido {
+        background-color: var(--success-bg);
+        color: var(--success);
+    }
+
+    .badge-status.denegado {
+        background-color: var(--danger-bg);
+        color: var(--danger);
+    }
+
+    .alumnos-tag {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+
+    /* Paginador */
+    .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 16px;
+        padding: 12px 16px;
+        background: var(--card-bg);
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .pagination-nav {
+        display: flex;
+        gap: 6px;
+    }
+
+    .page-link-custom {
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .page-link-custom.active {
+        background-color: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    .page-link-custom.disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+</style>
+
+<div class="container-historial">
+    <div class="header-historial">
+        <div>
+            <h1>Registro de Ingresos</h1>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Auditoría de lecturas QR en portería</p>
+        </div>
+        <a href="{% url 'escaner' %}" class="btn-volver">← Ir al Escáner</a>
+    </div>
+
+    <!-- Formulario de Búsqueda y Filtros -->
+    <div class="filter-card">
+        <form method="GET" action="{% url 'historial' %}" class="filter-form">
+            <div class="form-group-custom" style="grid-column: span 2;">
+                <label>Búsqueda General</label>
+                <input type="text" name="q" class="form-control-custom" placeholder="Buscar por Apoderado, RUT, Alumno o Curso..." value="{{ q }}">
+            </div>
+
+            <div class="form-group-custom">
+                <label>Estado</label>
+                <select name="estado" class="form-control-custom">
+                    <option value="">Todos</option>
+                    <option value="permitido" {% if estado == 'permitido' %}selected{% endif %}>Permitido</option>
+                    <option value="denegado" {% if estado == 'denegado' %}selected{% endif %}>Denegado</option>
+                </select>
+            </div>
+
+            <div class="form-group-custom">
+                <label>Fecha</label>
+                <input type="date" name="fecha" class="form-control-custom" value="{{ fecha }}">
+            </div>
+
+            <div class="filter-buttons">
+                <button type="submit" class="btn-submit-custom">Filtrar</button>
+                <a href="{% url 'historial' %}" class="btn-reset-custom">Limpiar</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabla de Registros -->
+    <div class="table-card">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>Fecha y Hora</th>
+                    <th>Apoderado</th>
+                    <th>RUT</th>
+                    <th>Alumnos</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for registro in page_obj %}
+                <tr>
+                    <td><strong>{{ registro.fecha_hora|localtime|date:"d/m/Y H:i:s" }}</strong></td>
+                    <td>{{ registro.apoderado.nombre }}</td>
+                    <td>{{ registro.apoderado.rut }}</td>
+                    <td class="alumnos-tag">
+                        {% for alumno in registro.apoderado.alumnos.all %}
+                            {{ alumno.nombre }} ({{ alumno.curso }}){% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            Sin asignación
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% if registro.permitido %}
+                            <span class="badge-status permitido">PERMITIDO</span>
+                        {% else %}
+                            <span class="badge-status denegado">DENEGADO</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                        No se encontraron registros de acceso con los criterios ingresados.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Paginador -->
+    {% if page_obj.has_other_pages %}
+    <div class="pagination-container">
+        <div>
+            Mostrando página <strong>{{ page_obj.number }}</strong> de <strong>{{ page_obj.paginator.num_pages }}</strong>
+        </div>
+
+        <div class="pagination-nav">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if q %}&q={{ q }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if fecha %}&fecha={{ fecha }}{% endif %}" class="page-link-custom">« Primero</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if fecha %}&fecha={{ fecha }}{% endif %}" class="page-link-custom">‹ Anterior</a>
+            {% else %}
+                <span class="page-link-custom disabled">« Primero</span>
+                <span class="page-link-custom disabled">‹ Anterior</span>
+            {% endif %}
+
+            <span class="page-link-custom active">{{ page_obj.number }}</span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if fecha %}&fecha={{ fecha }}{% endif %}" class="page-link-custom">Siguiente ›</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if q %}&q={{ q }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if fecha %}&fecha={{ fecha }}{% endif %}" class="page-link-custom">Último »</a>
+            {% else %}
+                <span class="page-link-custom disabled">Siguiente ›</span>
+                <span class="page-link-custom disabled">Último »</span>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

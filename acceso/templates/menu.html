@@ -1,0 +1,126 @@
+{% load django_bootstrap5 %}
+
+<!-- NAVBAR VERDE ELEGANTE -->
+<nav class="navbar navbar-expand-lg navbar-dark shadow-sm mb-4 py-2" 
+     style="background: linear-gradient(135deg, #0f5132 0%, #198754 100%); border-bottom: 3px solid #20c997;">
+  <div class="container-fluid px-4">
+    
+    <!-- BRAND / LOGO -->
+    <a class="navbar-brand fw-bold d-flex align-items-center gap-2 fs-4 text-white me-3" 
+       href="{% if user.is_staff %}{% url 'index' %}{% else %}{% url 'escaner' %}{% endif %}">
+      <img src="https://www.colegionocedal.cl/30-a%c3%b1os-firma/images/ins_cn_30_2_lmm.png" 
+           alt="Logo Nocedal" 
+           style="height: 40px; width: auto;" 
+           class="d-inline-block align-text-top">
+      <span>Control de <span class="fw-light opacity-75">Acceso</span></span>
+    </a>
+
+    <!-- FRASE MOTIVADORA -->
+    <div class="d-none d-lg-flex align-items-center border-start border-white border-opacity-25 ps-3 ms-2 text-white-50" style="max-width: 480px;">
+      <i class="fas fa-quote-left text-warning opacity-75 me-2 fs-6"></i>
+      <div id="contenedor-frase" class="small lh-sm text-white-50" style="transition: opacity 0.4s ease-in-out;">
+        <span id="frase-texto" class="fst-italic text-white">Cargando inspiración...</span>
+        <span id="frase-autor" class="d-block fw-bold text-warning opacity-75 mt-1" style="font-size: 0.75rem;"></span>
+      </div>
+    </div>
+
+    <!-- TOGGLER MÓVIL -->
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- LINKS DE NAVEGACIÓN -->
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <div class="navbar-nav ms-auto align-items-center gap-2 mt-2 mt-lg-0">
+        
+        {% if user.is_authenticated %}
+          
+          {% if user.is_staff %}
+            <!-- ACCESOS EXCLUSIVOS PARA ADMINISTRADORES / STAFF -->
+            <a class="nav-link text-white-50 px-3 rounded-pill transition-all" href="{% url 'index' %}">
+              <i class="fas fa-home me-1"></i> Inicio
+            </a>
+
+            <a class="nav-link text-white fw-semibold px-3 py-2 rounded-pill bg-white bg-opacity-10 border border-white border-opacity-25 shadow-sm" href="{% url 'escaner' %}">
+              <i class="fas fa-qrcode me-1"></i> Escáner QR
+            </a>
+
+            <a class="nav-link text-white-50 px-3 rounded-pill transition-all" href="{% url 'historial' %}">
+              <i class="fas fa-history me-1"></i> Historial
+            </a>
+
+            <a class="nav-link text-white-50 px-3 rounded-pill transition-all" href="/admin/" target="_blank">
+              <i class="fas fa-user-cog me-1"></i> Administrar
+            </a>
+          {% else %}
+            <!-- ACCESO ÚNICO PARA EL PORTERO -->
+            <a class="nav-link text-white fw-semibold px-3 py-2 rounded-pill bg-white bg-opacity-10 border border-white border-opacity-25 shadow-sm" href="{% url 'escaner' %}">
+              <i class="fas fa-qrcode me-1"></i> Escáner QR
+            </a>
+          {% endif %}
+
+          <!-- IDENTIFICADOR Y BOTÓN DE SALIDA -->
+          <div class="border-start border-white border-opacity-25 ps-3 ms-1 d-flex align-items-center gap-2">
+            <span class="text-white small fw-semibold">
+              <i class="fas fa-user-circle me-1 text-warning"></i> {{ user.get_full_name|default:user.username }}
+            </span>
+            <a class="btn btn-outline-light btn-sm rounded-pill px-3 py-1 ms-1 fw-semibold" href="{% url 'logout' %}">
+              <i class="fas fa-sign-out-alt me-1"></i> Salir
+            </a>
+          </div>
+
+        {% else %}
+          <a class="btn btn-light text-success fw-bold px-4 py-2 rounded-pill shadow-sm" href="{% url 'login' %}">
+            <i class="fas fa-sign-in-alt me-1"></i> Iniciar Sesión
+          </a>
+        {% endif %}
+
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+<style>
+  .nav-link:hover {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.15) !important;
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const frases = [
+        { texto: "La educación es el arma más poderosa que puedes usar para cambiar el mundo.", autor: "Nelson Mandela" },
+        { texto: "En medio de la dificultad reside la oportunidad.", autor: "Albert Einstein" },
+        { texto: "Lo que se hace a los niños, los niños lo harán a la sociedad.", autor: "Karl Menninger" },
+        { texto: "Educad a los niños y no será necesario castigar a los hombres.", autor: "Pitágoras" },
+        { texto: "Donde hay educación no hay distinción de clases.", autor: "Confucio" },
+        { texto: "No enseñes a tus hijos a ser ricos. Enséñales a ser felices.", autor: "San Juan Bosco" },
+        { texto: "El futuro pertenece a quienes creen en la belleza de sus sueños.", autor: "Eleanor Roosevelt" },
+        { texto: "La inteligencia más la paciencia es la clave del aprendizaje.", autor: "Gabriela Mistral" },
+        { texto: "El aprendizaje nunca agota la mente.", autor: "Leonardo da Vinci" }
+    ];
+
+    const contenedor = document.getElementById('contenedor-frase');
+    const txtFrase = document.getElementById('frase-texto');
+    const txtAutor = document.getElementById('frase-autor');
+
+    let indiceActual = Math.floor(Math.random() * frases.length);
+
+    function actualizarFrase() {
+        if (!contenedor || !txtFrase || !txtAutor) return;
+        contenedor.style.opacity = '0';
+        setTimeout(() => {
+            const F = frases[indiceActual];
+            txtFrase.textContent = `"${F.texto}"`;
+            txtAutor.textContent = `— ${F.autor}`;
+            contenedor.style.opacity = '1';
+            indiceActual = (indiceActual + 1) % frases.length;
+        }, 400);
+    }
+
+    actualizarFrase();
+    setInterval(actualizarFrase, 30000);
+});
+</script>
